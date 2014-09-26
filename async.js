@@ -10,7 +10,7 @@ if (Meteor.isServer) {
         }
       } else {
         // steps one and two requires a callback
-        steps[step]('tom@thesnail.org', 'hello tom!', function(error) {
+        steps[step]('test@discovermeteor.com', 'hello discover meteor!', function(error) {
           if (error) {
             console.log('error', error);
           } else {
