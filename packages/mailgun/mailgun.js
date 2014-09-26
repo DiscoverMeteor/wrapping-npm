@@ -41,7 +41,7 @@ steps[2] = function(emails, content, callback) {
       if (error)
         return callback(error);
     
-      EmailLogs.insert({time: new Date(), userId: 'foo'});
+      EmailLogs.insert({time: new Date(), userId: Meteor.userId()});
 
       callback(null);
     }).run();
