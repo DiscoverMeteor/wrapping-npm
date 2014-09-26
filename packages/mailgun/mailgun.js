@@ -32,39 +32,32 @@ steps[1] = function(emails, content, callback) {
 };
 
 steps[2] = function(emails, content, callback) {
-  
+  var future = new Future;
   var data = {to: emails, from: "hello@myapp.com", text: content};
 
-  mailgun.messages().send(data, function(error, body) {
-    // Wrap the callback in a fiber
-    new Fiber(function() {
-      if (error)
-        return callback(error);
+  mailgun.messages().send(data, Meteor.bindEnvironment(function(error, body) {
+    if (error)
+      return callback(error);
     
-      EmailLogs.insert({time: new Date(), userId: Meteor.userId()});
-
-      callback(null);
-    }).run();
-  });
+    EmailLogs.insert({time: new Date(), userId: Meteor.userId()});
+    
+    callback(null);
+  }));
 };
 
 steps[3] = function(emails, content) {
   var future = new Future;
   var data = {to: emails, from: "hello@myapp.com", text: content};
 
-  mailgun.messages().send(data, function(error, body) {
+  mailgun.messages().send(data, Meteor.bindEnvironment(function(error, body) {
     
-    // Wrap the callback in a fiber
-    new Fiber(function() {
-      if (error)
-        return future.error(error);
-    
-      EmailLogs.insert({time: new Date(), userId: Meteor.userId()});
+    if (error)
+      return future.error(error);
+  
+    EmailLogs.insert({time: new Date(), userId: Meteor.userId()});
 
-      future.return(null);
-    }).run();
-
-  });
+    future.return(null);
+  }));
   
   return future.wait();
 };
@@ -85,27 +78,11 @@ steps[4] = function(emails, content) {
   return future.wait();
 };
 
-steps[5] = function(emails, content) {
-  var future = new Future;
-  var data = {to: emails, from: "hello@myapp.com", text: content};
-
-  mailgun.messages().send(data, Meteor.bindEnvironment(function(error, body) {
-    if (error)
-      return future.error(error);
-  
-    EmailLogs.insert({time: new Date(), userId: Meteor.userId()});
-
-    future.return(null);
-  }));
-    
-  return future.wait();
-};
-
 
 var messages = mailgun.messages();
 var wrappedSend = Meteor._wrapAsync(messages.send.bind(messages));
 
-steps[6] = function(emails, content) {
+steps[5] = function(emails, content) {
 
   var data = {to: emails, from: "hello@myapp.com", text: content};
   
