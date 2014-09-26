@@ -12,7 +12,7 @@ if (Meteor.isServer) {
         // steps one and two requires a callback
         steps[step]('tom@thesnail.org', 'hello tom!', function(error) {
           if (error) {
-            console.log('error', e);
+            console.log('error', error);
           } else {
             console.log('it worked!');
           }
